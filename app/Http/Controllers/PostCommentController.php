@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
+use App\Http\Requests\StoreCommentRequest;
 
 class PostCommentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show comments for "Post 1"
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $comments = Comment::query()
+        $comments = Comment::whereNull('parent_id')
+                            ->withCount('children')
+                            ->with('latestChild')
                             ->latest()
                             ->paginate();
 
