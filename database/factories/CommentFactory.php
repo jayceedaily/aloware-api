@@ -22,4 +22,28 @@ class CommentFactory extends Factory
             'body' => $this->faker->text(),
         ];
     }
+
+    public function levelTwo()
+    {
+        return $this->state(function (array $attributes) {
+
+            $comment = Comment::whereNull('parent_id')->inRandomOrder()->first();
+
+            return [
+                'parent_id' => $comment->id,
+            ];
+        });
+    }
+
+    public function levelThree()
+    {
+        return $this->state(function (array $attributes) {
+
+            $comment = Comment::whereNotNull('parent_id')->inRandomOrder()->first();
+
+            return [
+                'parent_id' => $comment->id,
+            ];
+        });
+    }
 }

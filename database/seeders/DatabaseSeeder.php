@@ -16,6 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Comment::factory(1000)->create();
+        echo 'SEEDING LEVEL 1 COMMENTS' . PHP_EOL;
+        Comment::factory(100)->create();
+
+        echo 'SEEDING LEVEL 2 COMMENTS' . PHP_EOL;
+        Comment::factory(1000)->levelTwo()->create();
+
+        echo 'SEEDING LEVEL 3 COMMENTS' . PHP_EOL;
+        Comment::factory(10000)->levelThree()->create();
     }
 }
