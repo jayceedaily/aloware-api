@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class Comment extends Model
@@ -41,31 +42,34 @@ class Comment extends Model
      */
     public function getLevel()
     {
-        return DB::select("
+        return Cache::remember('cmt-lvl-' . $this->id, 300, function () {
 
-        WITH RECURSIVE cte AS (
+            return DB::select("
+
+            WITH RECURSIVE cte AS (
+                SELECT
+                    1 AS lvl,
+                    parent_id,
+                    id
+                FROM
+                    comments
+
+                UNION ALL
+                SELECT
+                    lvl + 1,
+                    comments.parent_id,
+                    comments.id
+                FROM
+                    comments
+                    JOIN cte ON comments.parent_id = cte.id
+            )
+
             SELECT
-                1 AS lvl,
-                parent_id,
-                id
+                MAX(lvl) AS depth
             FROM
-                comments
-
-            UNION ALL
-            SELECT
-                lvl + 1,
-                comments.parent_id,
-                comments.id
-            FROM
-                comments
-                JOIN cte ON comments.parent_id = cte.id
-        )
-
-        SELECT
-            MAX(lvl) AS depth
-        FROM
-            cte
-            where id = ?
-            ;", [$this->id])[0]->depth;
+                cte
+                where id = ?
+                ;", [$this->id])[0]->depth;
+        });
     }
 }
