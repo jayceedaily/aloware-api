@@ -4,15 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCommentReplyRequest;
 use App\Models\Comment;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class CommentReplyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+     /**
+      * Display a listing of comments.
+      *
+      * @param Request $request
+      * @param Comment $comment
+      * @return Response|ResponseFactory
+      * @throws BindingResolutionException
+      */
     public function index(Request $request, Comment $comment)
     {
         $comments = $comment
@@ -25,12 +33,16 @@ class CommentReplyController extends Controller
         return response($comments);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+     /**
+      * Store comment reply
+      *
+      * @param StoreCommentReplyRequest $request
+      * @param Comment $comment
+      * @return Response|ResponseFactory
+      * @throws ValidationException
+      * @throws MassAssignmentException
+      * @throws BindingResolutionException
+      */
     public function store(StoreCommentReplyRequest $request, Comment $comment)
     {
         $comment = $comment->children()->create($request->validated());
