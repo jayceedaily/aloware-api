@@ -23,6 +23,13 @@ class CommentFactory extends Factory
         ];
     }
 
+    /**
+     * Create level 2 comments
+     *
+     * i.e: comments->comments
+     *
+     * @return static
+     */
     public function levelTwo()
     {
         return $this->state(function (array $attributes) {
@@ -35,6 +42,13 @@ class CommentFactory extends Factory
         });
     }
 
+    /**
+     * Create level 3 comments
+     *
+     * i.e. comments->comments->comments
+     *
+     * @return static
+     */
     public function levelThree()
     {
         return $this->state(function (array $attributes) {
