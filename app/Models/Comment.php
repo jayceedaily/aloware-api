@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class Comment extends Model
 {
@@ -13,33 +16,42 @@ class Comment extends Model
 
     protected $fillable = ['name', 'body'];
 
-    /**
-     * Parent comment
-     */
+     /**
+      * Parent comment
+      *
+      * @return HasOne
+      */
     public function parent()
     {
         return $this->hasOne(self::class, 'id', 'parent_id');
     }
 
-    /**
-     * Children comment
-     */
+     /**
+      * Children comment
+      *
+      * @return HasMany
+      */
     public function children()
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    /**
-     * Latest child comment
-     */
+     /**
+      * Latest child comment
+      *
+      * @return HasOne
+      * @throws InvalidArgumentException
+      */
     public function latestChild()
     {
         return $this->hasOne(self::class, 'parent_id')->latestOfMany();
     }
 
-    /**
-     * Get depth of comment
-     */
+     /**
+      * Get depth of comment
+      *
+      * @return mixed
+      */
     public function getLevel()
     {
         return Cache::remember('cmt-lvl-' . $this->id, 300, function () {
