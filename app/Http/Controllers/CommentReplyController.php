@@ -24,9 +24,8 @@ class CommentReplyController extends Controller
     public function index(Request $request, Comment $comment)
     {
         $comments = $comment
-                            ->children()
-                            ->withCount('children')
-                            ->with('latestChild')
+                            ->replies()
+                            ->withCount('replies')
                             ->latest()
                             ->paginate();
 
@@ -45,7 +44,7 @@ class CommentReplyController extends Controller
       */
     public function store(StoreCommentReplyRequest $request, Comment $comment)
     {
-        $comment = $comment->children()->create($request->validated());
+        $comment = $comment->replies()->create($request->validated());
 
         return response($comment, 201);
     }
