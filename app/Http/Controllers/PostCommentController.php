@@ -20,8 +20,7 @@ class PostCommentController extends Controller
     public function index()
     {
         $comments = Comment::whereNull('parent_id')
-                            ->withCount('children')
-                            ->with('latestChild')
+                            ->withCount('replies')
                             ->latest()
                             ->paginate();
 
