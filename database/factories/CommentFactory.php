@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Comment;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +18,13 @@ class CommentFactory extends Factory
      */
     public function definition()
     {
+        $date = Carbon::today()->subMinutes(rand(0, 525600));
+
         return [
             'name' => $this->faker->name(),
             'body' => $this->faker->text(),
+            'created_at' => $date,
+            'updated_at' => $date,
         ];
     }
 
@@ -36,8 +41,14 @@ class CommentFactory extends Factory
 
             $comment = Comment::whereNull('parent_id')->inRandomOrder()->first();
 
+            $replyGap = $comment->created_at->diffInMinutes(Carbon::now());
+
+            $date = $comment->created_at->addMinutes(rand(0, $replyGap));
+
             return [
                 'parent_id' => $comment->id,
+                'created_at' => $date,
+                'updated_at' => $date,
             ];
         });
     }
@@ -55,8 +66,14 @@ class CommentFactory extends Factory
 
             $comment = Comment::whereNotNull('parent_id')->inRandomOrder()->first();
 
+            $replyGap = $comment->created_at->diffInMinutes(Carbon::now());
+
+            $date = $comment->created_at->clone()->addMinutes(rand(ceil($replyGap/2), $replyGap));
+
             return [
                 'parent_id' => $comment->id,
+                'created_at' => $date,
+                'updated_at' => $date,
             ];
         });
     }
