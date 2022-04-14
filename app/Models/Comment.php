@@ -16,6 +16,13 @@ class Comment extends Model
 
     protected $fillable = ['name', 'body'];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // protected $withCount = ['replies'];
+
      /**
       * Parent comment
       *
@@ -27,11 +34,11 @@ class Comment extends Model
     }
 
      /**
-      * Children comment
+      * replies comment
       *
       * @return HasMany
       */
-    public function children()
+    public function replies()
     {
         return $this->hasMany(self::class, 'parent_id');
     }
@@ -42,7 +49,7 @@ class Comment extends Model
       * @return HasOne
       * @throws InvalidArgumentException
       */
-    public function latestChild()
+    public function latestReply()
     {
         return $this->hasOne(self::class, 'parent_id')->latestOfMany();
     }
@@ -54,34 +61,34 @@ class Comment extends Model
       */
     public function getLevel()
     {
-        return Cache::remember('cmt-lvl-' . $this->id, 300, function () {
+        return DB::select("
 
-            return DB::select("
+        with recursive CommentTree (id, parent_id, level) as (
+            select
+                id,
+                parent_id,
+                0 as level
+            from
+                comments
+            where
+                id = ?
 
-            WITH RECURSIVE cte AS (
-                SELECT
-                    1 AS lvl,
-                    parent_id,
-                    id
-                FROM
-                    comments
+            union all
 
-                UNION ALL
-                SELECT
-                    lvl + 1,
-                    comments.parent_id,
-                    comments.id
-                FROM
-                    comments
-                    JOIN cte ON comments.parent_id = cte.id
-            )
+            select
+                c.id,
+                c.parent_id,
+                ct.level + 1
+            from
+                CommentTree ct
+                join comments c on (c.id = ct.parent_id)
+        )
+        select
+            COUNT(*) as depth
+        from
+            CommentTree
 
-            SELECT
-                MAX(lvl) AS depth
-            FROM
-                cte
-                where id = ?
-                ;", [$this->id])[0]->depth;
-        });
+            limit 1;
+            ;", [$this->id])[0]->depth;
     }
 }
