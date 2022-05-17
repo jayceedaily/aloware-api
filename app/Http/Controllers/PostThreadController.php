@@ -38,7 +38,8 @@ class PostThreadController extends Controller
       */
     public function store(StoreThreadRequest $request)
     {
-        $thread = Thread::create($request->validated());
+        // @TODO refactor created_by as Model event
+        $thread = $request->user()->threads()->create($request->validated());
 
         return response($thread, 201);
     }
