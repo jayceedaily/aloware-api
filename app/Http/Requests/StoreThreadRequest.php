@@ -24,8 +24,8 @@ class StoreThreadRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|min:2|max:64',
-            'body' => 'required|string|min:2',
+            'body'      => 'required_without:child_id|string|min:2',
+            'child_id'  => 'nullable|exists:threads,id',
         ];
     }
 }
