@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('threads', function (Blueprint $table) {
 
             $table->id();
 
@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->foreign('parent_id')
                     ->references('id')
-                    ->on('comments');
+                    ->on('threads');
         });
     }
 
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('threads');
     }
 };

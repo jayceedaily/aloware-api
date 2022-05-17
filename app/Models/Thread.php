@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
-class Comment extends Model
+class Thread extends Model
 {
     use HasFactory;
 
@@ -24,7 +24,7 @@ class Comment extends Model
     // protected $withCount = ['replies'];
 
      /**
-      * Parent comment
+      * Parent thread
       *
       * @return HasOne
       */
@@ -34,7 +34,7 @@ class Comment extends Model
     }
 
      /**
-      * replies comment
+      * replies thread
       *
       * @return HasMany
       */
@@ -44,7 +44,7 @@ class Comment extends Model
     }
 
      /**
-      * Latest child comment
+      * Latest child thread
       *
       * @return HasOne
       * @throws InvalidArgumentException
@@ -55,7 +55,7 @@ class Comment extends Model
     }
 
      /**
-      * Get depth of comment
+      * Get depth of thread
       *
       * @return mixed
       */
@@ -63,13 +63,13 @@ class Comment extends Model
     {
         return DB::select("
 
-        with recursive CommentTree (id, parent_id, level) as (
+        with recursive ThreadTree (id, parent_id, level) as (
             select
                 id,
                 parent_id,
                 0 as level
             from
-                comments
+                threads
             where
                 id = ?
 
@@ -80,13 +80,13 @@ class Comment extends Model
                 c.parent_id,
                 ct.level + 1
             from
-                CommentTree ct
-                join comments c on (c.id = ct.parent_id)
+                ThreadTree ct
+                join threads c on (c.id = ct.parent_id)
         )
         select
             COUNT(*) as depth
         from
-            CommentTree
+            ThreadTree
 
             limit 1;
             ;", [$this->id])[0]->depth;

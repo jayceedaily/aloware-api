@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostCommentController;
+use App\Http\Controllers\PostThreadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +16,7 @@ use App\Http\Controllers\PostCommentController;
 */
 
 
-require('api/comment-reply.php');
+require('api/thread-reply.php');
 
-require('api/post-comment.php');
+require('api/post-thread.php');
 
