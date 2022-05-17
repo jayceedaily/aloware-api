@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Author
-            $table->foreignId('created_by')->nullable();
+            $table->foreignId('created_by');
 
             $table->foreign('created_by')
                     ->references('id')
