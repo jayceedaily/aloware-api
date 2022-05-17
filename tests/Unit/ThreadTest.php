@@ -2,9 +2,10 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Http\Response;
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Thread;
+use Illuminate\Http\Response;
 
 class ThreadTest extends TestCase
 {
@@ -20,6 +21,10 @@ class ThreadTest extends TestCase
      */
     public function test_post_a_thread()
     {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
         $this->json('POST', route('post-thread.create'), self::PAYLOAD)
             ->assertStatus(Response::HTTP_CREATED);
     }
@@ -38,9 +43,15 @@ class ThreadTest extends TestCase
      */
     public function test_post_a_thread_reply()
     {
-        $thread = Thread::factory()->create();
+        $user = User::factory()->create();
 
-        $this->json('POST', route('thread-reply.create', ['thread' => $thread]), self::PAYLOAD)
+        $this->actingAs($user);
+
+        $thread = Thread::factory()->create([
+            'created_by' => $user->id
+        ]);
+
+        $this->json('POST', route('thread-reply.create', ['thread' => $thread]), ['body' => 'test_post_a_thread_reply'])
             ->assertStatus(Response::HTTP_CREATED);
     }
 
@@ -49,7 +60,13 @@ class ThreadTest extends TestCase
      */
     public function test_view_replies()
     {
-        $thread = Thread::factory()->create();
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $thread = Thread::factory()->create([
+            'created_by' => $user->id
+        ]);
 
         $this->json('GET', route('thread-reply.index', ['thread' => $thread]))
             ->assertStatus(Response::HTTP_OK);
@@ -67,13 +84,20 @@ class ThreadTest extends TestCase
             return $this->assertTrue(true);
         }
 
-        // Dynamically adjust level depending on config
-        for ($i = 0; $i < config('thread.thread_max_level') ; $i++) {
+        $user = User::factory()->create();
 
-            $thread = Thread::factory()->create(['parent_id' => $thread?->id]);
+        $this->actingAs($user);
+
+        // Dynamically adjust level depending on config
+        for ($i = 0; $i < $threadMaxLevel ; $i++) {
+
+            $thread = Thread::factory()->create([
+                'created_by' => $user->id,
+                'parent_id' => $thread?->id,
+            ]);
         }
 
-        $this->json('POST', route('thread-reply.create', ['thread' => $thread]), self::PAYLOAD)
+        $this->json('POST', route('thread-reply.create', ['thread' => $thread]), ['body' => 'test_limit_thread_replies'])
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }
