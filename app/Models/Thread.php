@@ -15,7 +15,7 @@ class Thread extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'body'];
+    protected $fillable = ['name', 'body', 'parent_id', 'created_by'];
 
     protected $casts = [
         'created_at' => 'datetime',
