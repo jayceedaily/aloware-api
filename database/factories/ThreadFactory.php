@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Thread;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,9 +21,11 @@ class ThreadFactory extends Factory
     {
         $date = Carbon::today()->subMinutes(rand(0, 525600));
 
+        $user = User::inRandomOrder()->first();
+
         return [
-            'name' => $this->faker->name(),
-            'body' => $this->faker->text(),
+            'created_by' => $user->id,
+            'body'       => $this->faker->text(),
             'created_at' => $date,
             'updated_at' => $date,
         ];

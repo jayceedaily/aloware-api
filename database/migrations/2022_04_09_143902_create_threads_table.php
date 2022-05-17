@@ -17,12 +17,28 @@ return new class extends Migration
 
             $table->id();
 
-            $table->foreignId('parent_id')->nullable();
-            $table->string('name', 64);
-            $table->longText('body');
+            $table->longText('body')->nullable();
+
             $table->timestamps();
 
+            // Author
+            $table->foreignId('created_by')->nullable();
+
+            $table->foreign('created_by')
+                    ->references('id')
+                    ->on('users');
+
+            // Reply
+            $table->foreignId('parent_id')->nullable();
+
             $table->foreign('parent_id')
+                    ->references('id')
+                    ->on('threads');
+
+            // Share
+            $table->foreignId('child_id')->nullable();
+
+            $table->foreign('child_id')
                     ->references('id')
                     ->on('threads');
         });

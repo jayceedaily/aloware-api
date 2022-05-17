@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +24,16 @@ class Thread extends Model
 
     // protected $withCount = ['replies'];
 
+    /**
+     * Author
+     *
+     * @return BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
      /**
       * Parent thread
       *
@@ -31,6 +42,16 @@ class Thread extends Model
     public function parent()
     {
         return $this->hasOne(self::class, 'id', 'parent_id');
+    }
+
+    /**
+     * Child thread
+     *
+     * @return HasMany
+     */
+    public function child()
+    {
+        return $this->hasMany(self::class);
     }
 
      /**

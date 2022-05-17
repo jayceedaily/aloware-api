@@ -21,6 +21,7 @@ class PostThreadController extends Controller
     {
         $threads = Thread::whereNull('parent_id')
                             ->withCount('replies')
+                            ->with('author')
                             ->latest()
                             ->paginate();
 

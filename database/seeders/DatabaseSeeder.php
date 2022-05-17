@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Thread;
+use App\Models\User;
 use Database\Factories\ThreadFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,6 +17,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        echo 'SEEDING USERS' . PHP_EOL;
+        User::factory(100)->create();
+
         echo 'SEEDING LEVEL 1 COMMENTS' . PHP_EOL;
         Thread::factory(100)->create();
 
