@@ -60,11 +60,17 @@ class ThreadTest extends TestCase
      */
     public function test_limit_thread_replies()
     {
-        $thread = Thread::factory()->create();
+        $thread = null;
+
+        if($threadMaxLevel = config('thread.thread_max_level') === NULL) {
+
+            return $this->assertTrue(true);
+        }
 
         // Dynamically adjust level depending on config
-        for ($i=1; $i < config('thread.thread_max_level') ; $i++) {
-            $thread = Thread::factory()->create(['parent_id' => $thread->id]);
+        for ($i = 0; $i < config('thread.thread_max_level') ; $i++) {
+
+            $thread = Thread::factory()->create(['parent_id' => $thread?->id]);
         }
 
         $this->json('POST', route('thread-reply.create', ['thread' => $thread]), self::PAYLOAD)

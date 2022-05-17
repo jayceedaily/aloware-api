@@ -18,7 +18,11 @@ class StoreThreadReplyRequest extends FormRequest
 
         $threadMaxLevel    = config('thread.thread_max_level');
 
-        return  $threadLevel < $threadMaxLevel;
+        if ($threadMaxLevel === NULL) {
+            return true;
+        }
+
+        return $threadLevel < $threadMaxLevel;
     }
 
     /**
