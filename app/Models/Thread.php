@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
-class Comment extends Model
+class Thread extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'body'];
+    protected $fillable = ['name', 'body', 'parent_id', 'created_by'];
 
     protected $casts = [
         'created_at' => 'datetime',
@@ -23,8 +24,18 @@ class Comment extends Model
 
     // protected $withCount = ['replies'];
 
+    /**
+     * Author
+     *
+     * @return BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
      /**
-      * Parent comment
+      * Parent thread
       *
       * @return HasOne
       */
@@ -33,8 +44,18 @@ class Comment extends Model
         return $this->hasOne(self::class, 'id', 'parent_id');
     }
 
+    /**
+     * Child thread
+     *
+     * @return HasMany
+     */
+    public function child()
+    {
+        return $this->hasMany(self::class);
+    }
+
      /**
-      * replies comment
+      * replies thread
       *
       * @return HasMany
       */
@@ -44,7 +65,7 @@ class Comment extends Model
     }
 
      /**
-      * Latest child comment
+      * Latest child thread
       *
       * @return HasOne
       * @throws InvalidArgumentException
@@ -55,7 +76,7 @@ class Comment extends Model
     }
 
      /**
-      * Get depth of comment
+      * Get depth of thread
       *
       * @return mixed
       */
@@ -63,13 +84,13 @@ class Comment extends Model
     {
         return DB::select("
 
-        with recursive CommentTree (id, parent_id, level) as (
+        with recursive ThreadTree (id, parent_id, level) as (
             select
                 id,
                 parent_id,
                 0 as level
             from
-                comments
+                threads
             where
                 id = ?
 
@@ -80,13 +101,13 @@ class Comment extends Model
                 c.parent_id,
                 ct.level + 1
             from
-                CommentTree ct
-                join comments c on (c.id = ct.parent_id)
+                ThreadTree ct
+                join threads c on (c.id = ct.parent_id)
         )
         select
             COUNT(*) as depth
         from
-            CommentTree
+            ThreadTree
 
             limit 1;
             ;", [$this->id])[0]->depth;

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Comment;
-use Database\Factories\CommentFactory;
+use App\Models\Thread;
+use App\Models\User;
+use Database\Factories\ThreadFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,13 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        echo 'SEEDING USERS' . PHP_EOL;
+        User::factory(100)->create();
+
         echo 'SEEDING LEVEL 1 COMMENTS' . PHP_EOL;
-        Comment::factory(100)->create();
+        Thread::factory(100)->create();
 
         echo 'SEEDING LEVEL 2 COMMENTS' . PHP_EOL;
-        Comment::factory(1000)->levelTwo()->create();
+        Thread::factory(1000)->levelTwo()->create();
 
         echo 'SEEDING LEVEL 3 COMMENTS' . PHP_EOL;
-        Comment::factory(10000)->levelThree()->create();
+        Thread::factory(10000)->levelThree()->create();
     }
 }

@@ -2,43 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
-use App\Http\Requests\StoreCommentRequest;
+use App\Models\Thread;
+use App\Http\Requests\StoreThreadRequest;
 use Illuminate\Http\Response;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Validation\ValidationException;
 
-class PostCommentController extends Controller
+class PostThreadController extends Controller
 {
      /**
-      * Show comments for "Post 1"
+      * Show threads for "Post 1"
       *
       * @return Response|ResponseFactory
       * @throws BindingResolutionException
       */
     public function index()
     {
-        $comments = Comment::whereNull('parent_id')
+        $threads = Thread::whereNull('parent_id')
                             ->withCount('replies')
+                            ->with('author')
                             ->latest()
                             ->paginate();
 
-        return response($comments);
+        return response($threads);
     }
 
      /**
-      * Store a comment
+      * Store a thread
       *
-      * @param StoreCommentRequest $request
+      * @param StoreThreadRequest $request
       * @return Response|ResponseFactory
       * @throws ValidationException
       * @throws BindingResolutionException
       */
-    public function store(StoreCommentRequest $request)
+    public function store(StoreThreadRequest $request)
     {
-        $comment = Comment::create($request->validated());
+        // @TODO refactor created_by as Model event
+        $thread = $request->user()->threads()->create($request->validated());
 
-        return response($comment, 201);
+        return response($thread, 201);
     }
 }

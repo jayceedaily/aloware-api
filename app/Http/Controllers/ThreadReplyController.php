@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCommentReplyRequest;
-use App\Models\Comment;
+use App\Http\Requests\StoreThreadReplyRequest;
+use App\Models\Thread;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\MassAssignmentException;
@@ -11,41 +11,43 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
-class CommentReplyController extends Controller
+class ThreadReplyController extends Controller
 {
      /**
-      * Display a listing of comments.
+      * Display a listing of threads.
       *
       * @param Request $request
-      * @param Comment $comment
+      * @param Thread $thread
       * @return Response|ResponseFactory
       * @throws BindingResolutionException
       */
-    public function index(Request $request, Comment $comment)
+    public function index(Request $request, Thread $thread)
     {
-        $comments = $comment
-                            ->replies()
+        $threads = $thread->replies()
                             ->withCount('replies')
+                            ->with('author')
                             ->latest()
                             ->paginate();
 
-        return response($comments);
+        return response($threads);
     }
 
      /**
-      * Store comment reply
+      * Store thread reply
       *
-      * @param StoreCommentReplyRequest $request
-      * @param Comment $comment
+      * @param StoreThreadReplyRequest $request
+      * @param Thread $thread
       * @return Response|ResponseFactory
       * @throws ValidationException
       * @throws MassAssignmentException
       * @throws BindingResolutionException
       */
-    public function store(StoreCommentReplyRequest $request, Comment $comment)
+    public function store(StoreThreadReplyRequest $request, Thread $thread)
     {
-        $comment = $comment->replies()->create($request->validated());
+        // $thread = $thread->replies()->create($request->validated());
 
-        return response($comment, 201);
+        $thread = $request->user()->threads()->create($request->validated() + ["parent_id" => $thread->id]);
+
+        return response($thread, 201);
     }
 }

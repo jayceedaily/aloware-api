@@ -2,14 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\Comment;
+use App\Models\Thread;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comment>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Thread>
  */
-class CommentFactory extends Factory
+class ThreadFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,18 +21,20 @@ class CommentFactory extends Factory
     {
         $date = Carbon::today()->subMinutes(rand(0, 525600));
 
+        $user = User::inRandomOrder()->first();
+
         return [
-            'name' => $this->faker->name(),
-            'body' => $this->faker->text(),
+            'created_by' => $user->id,
+            'body'       => $this->faker->text(),
             'created_at' => $date,
             'updated_at' => $date,
         ];
     }
 
     /**
-     * Create level 2 comments
+     * Create level 2 threads
      *
-     * i.e: comments->comments
+     * i.e: threads->threads
      *
      * @return static
      */
@@ -39,14 +42,14 @@ class CommentFactory extends Factory
     {
         return $this->state(function (array $attributes) {
 
-            $comment = Comment::whereNull('parent_id')->inRandomOrder()->first();
+            $thread = Thread::whereNull('parent_id')->inRandomOrder()->first();
 
-            $replyGap = $comment->created_at->diffInMinutes(Carbon::now());
+            $replyGap = $thread->created_at->diffInMinutes(Carbon::now());
 
-            $date = $comment->created_at->addMinutes(rand(0, $replyGap));
+            $date = $thread->created_at->addMinutes(rand(0, $replyGap));
 
             return [
-                'parent_id' => $comment->id,
+                'parent_id' => $thread->id,
                 'created_at' => $date,
                 'updated_at' => $date,
             ];
@@ -54,9 +57,9 @@ class CommentFactory extends Factory
     }
 
     /**
-     * Create level 3 comments
+     * Create level 3 threads
      *
-     * i.e. comments->comments->comments
+     * i.e. threads->threads->threads
      *
      * @return static
      */
@@ -64,14 +67,14 @@ class CommentFactory extends Factory
     {
         return $this->state(function (array $attributes) {
 
-            $comment = Comment::whereNotNull('parent_id')->inRandomOrder()->first();
+            $thread = Thread::whereNotNull('parent_id')->inRandomOrder()->first();
 
-            $replyGap = $comment->created_at->diffInMinutes(Carbon::now());
+            $replyGap = $thread->created_at->diffInMinutes(Carbon::now());
 
-            $date = $comment->created_at->clone()->addMinutes(rand(ceil($replyGap/2), $replyGap));
+            $date = $thread->created_at->clone()->addMinutes(rand(ceil($replyGap/2), $replyGap));
 
             return [
-                'parent_id' => $comment->id,
+                'parent_id' => $thread->id,
                 'created_at' => $date,
                 'updated_at' => $date,
             ];
