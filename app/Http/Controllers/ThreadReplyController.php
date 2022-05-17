@@ -23,9 +23,9 @@ class ThreadReplyController extends Controller
       */
     public function index(Request $request, Thread $thread)
     {
-        $threads = $thread
-                            ->replies()
+        $threads = $thread->replies()
                             ->withCount('replies')
+                            ->with('author')
                             ->latest()
                             ->paginate();
 
@@ -44,7 +44,9 @@ class ThreadReplyController extends Controller
       */
     public function store(StoreThreadReplyRequest $request, Thread $thread)
     {
-        $thread = $thread->replies()->create($request->validated());
+        // $thread = $thread->replies()->create($request->validated());
+
+        $thread = $request->user()->threads()->create($request->validated() + ["parent_id" => $thread->id]);
 
         return response($thread, 201);
     }
