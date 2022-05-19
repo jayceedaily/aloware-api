@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostThreadController;
+// use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\PostThreadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +15,8 @@ use App\Http\Controllers\PostThreadController;
 |
 */
 
+
+require('api/auth.php');
 
 require('api/thread-reply.php');
 
