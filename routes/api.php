@@ -18,6 +18,8 @@
 
 require('api/auth.php');
 
+require('api/thread.php');
+
 require('api/thread-reply.php');
 
 require('api/post-thread.php');

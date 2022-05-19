@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreThreadReplyRequest;
+use App\Http\Requests\ThreadStoreRequest;
 use App\Models\Thread;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -25,7 +25,7 @@ class ThreadReplyController extends Controller
     {
         $threads = $thread->replies()
                             ->withCount('replies')
-                            ->with('author')
+                            ->with('createdBy')
                             ->latest()
                             ->paginate();
 
@@ -42,11 +42,13 @@ class ThreadReplyController extends Controller
       * @throws MassAssignmentException
       * @throws BindingResolutionException
       */
-    public function store(StoreThreadReplyRequest $request, Thread $thread)
+    public function store(ThreadStoreRequest $request, Thread $thread)
     {
-        // $thread = $thread->replies()->create($request->validated());
+        $thread = $thread->replies()->create($request->validated());
 
-        $thread = $request->user()->threads()->create($request->validated() + ["parent_id" => $thread->id]);
+        $thread->load('createdBy');
+
+        // $thread = $request->user()->threads()->create($request->validated() + ["parent_id" => $thread->id]);
 
         return response($thread, 201);
     }
