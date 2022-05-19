@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CreatedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use InvalidArgumentException;
 
 class Thread extends Model
 {
-    use HasFactory;
+    use HasFactory, CreatedBy;
 
     protected $fillable = ['name', 'body', 'parent_id', 'created_by'];
 
@@ -24,15 +25,6 @@ class Thread extends Model
 
     // protected $withCount = ['replies'];
 
-    /**
-     * Author
-     *
-     * @return BelongsTo
-     */
-    public function author()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
 
      /**
       * Parent thread
