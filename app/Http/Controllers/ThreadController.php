@@ -14,9 +14,7 @@ class ThreadController extends Controller
 {
     public function index(Request $request)
     {
-        $threads = Thread::whereNull('parent_id')
-                            ->withCount('replies')
-                            ->with('author')
+        $threads = Thread::fromFollowing($request->user())
                             ->latest()
                             ->paginate();
 
