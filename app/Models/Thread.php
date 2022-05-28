@@ -67,6 +67,19 @@ class Thread extends Model
         return $this->hasOne(self::class, 'parent_id')->latestOfMany();
     }
 
+    /**
+     *
+     * @param mixed $query
+     * @param mixed $user
+     * @return mixed
+     */
+    public function scopeFromFollowing($query, $user)
+    {
+        return $query->select('threads.*')
+                    ->join('user_followers', 'threads.created_by','=','user_followers.following_id')
+                    ->where('follower_id', $user->id);
+    }
+
      /**
       * Get depth of thread
       *
