@@ -10,7 +10,6 @@ use Illuminate\Http\Response;
 class ThreadTest extends TestCase
 {
     public const PAYLOAD = [
-        'name' => 'John Doe',
         'body' => 'Test Thread'
     ];
 
@@ -25,7 +24,7 @@ class ThreadTest extends TestCase
 
         $this->actingAs($user);
 
-        $this->json('POST', route('post-thread.create'), self::PAYLOAD)
+        $this->json('POST', route('thread.create'), self::PAYLOAD)
             ->assertStatus(Response::HTTP_CREATED);
     }
 
@@ -34,7 +33,11 @@ class ThreadTest extends TestCase
      */
     public function test_view_threads()
     {
-        $this->json('GET', route('post-thread.index'))
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $this->json('GET', route('thread.index'))
             ->assertStatus(Response::HTTP_OK);
     }
 
