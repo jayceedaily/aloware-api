@@ -15,6 +15,8 @@ class ThreadController extends Controller
     public function index(Request $request)
     {
         $threads = Thread::fromFollowing($request->user())
+                            ->with('createdBy')
+                            ->withCount('replies')
                             ->latest()
                             ->paginate();
 
@@ -35,5 +37,10 @@ class ThreadController extends Controller
         $thread->load('createdBy');
 
         return response($thread, 201);
+    }
+
+    public function show(Thread $thread)
+    {
+        return response($thread);
     }
 }
