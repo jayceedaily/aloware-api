@@ -85,6 +85,11 @@ class Thread extends Model
                     ->where('follower_id', $user->id);
     }
 
+    public function likes()
+    {
+        return $this->hasMany(ThreadLike::class);
+    }
+
      /**
       * Get depth of thread
       *

@@ -16,7 +16,7 @@ class ThreadController extends Controller
     {
         $threads = Thread::fromFollowing($request->user())
                             ->with('createdBy')
-                            ->withCount('replies')
+                            ->withCount(['replies','likes'])
                             ->latest()
                             ->paginate();
 
@@ -48,3 +48,15 @@ class ThreadController extends Controller
         return response($thread);
     }
 }
+
+
+
+/**
+     * Get Eloquent query with bindings
+     */
+    function get_eloquent_sql_with_bindings($query)
+    {
+        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
+            return is_numeric($binding) ? $binding : "'{$binding}'";
+        })->toArray());
+    }
