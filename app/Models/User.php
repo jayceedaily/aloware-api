@@ -73,4 +73,14 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(self::class, UserFollower::class, 'follower_id','id',null,'following_id');
     }
+
+    /**
+     * Liked threads
+     *
+     * @return HasMany
+     */
+    public function threadLikes()
+    {
+        return $this->hasMany(ThreadLike::class);
+    }
 }
