@@ -41,6 +41,10 @@ class ThreadController extends Controller
 
     public function show(Thread $thread)
     {
+        $thread->load('createdBy');
+
+        $thread->loadCount('replies');
+
         return response($thread);
     }
 }
