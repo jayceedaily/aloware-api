@@ -43,7 +43,7 @@ class ThreadController extends Controller
     {
         $thread->load('createdBy');
 
-        $thread->loadCount('replies');
+        $thread->loadCount(['replies','likes']);
 
         return response($thread);
     }
