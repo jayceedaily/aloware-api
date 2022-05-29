@@ -75,8 +75,13 @@ class Thread extends Model
      */
     public function scopeFromFollowing($query, $user)
     {
-        return $query->select('threads.*')
+        return $query
+                    ->selectRaw('threads.*, thread_likes.user_id is not null as liked')
                     ->join('user_followers', 'threads.created_by','=','user_followers.following_id')
+                    ->leftJoin('thread_likes', function($on) use ($user) {
+                        $on->whereColumn('thread_likes.thread_id', 'threads.id')
+                            ->where('thread_likes.user_id', $user->id);
+                    })
                     ->where('follower_id', $user->id);
     }
 
