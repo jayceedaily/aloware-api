@@ -19,7 +19,7 @@ class ThreadFactory extends Factory
      */
     public function definition()
     {
-        $date = Carbon::today()->subMinutes(rand(0, 525600));
+        $date = Carbon::today()->subMinutes(rand(0, 1440));
 
         $user = User::inRandomOrder()->first();
 
@@ -31,6 +31,49 @@ class ThreadFactory extends Factory
         ];
     }
 
+    public function share()
+    {
+        return $this->state(function (array $attributes) {
+
+            $thread = Thread::whereNotNull('body')->inRandomOrder()->first();
+
+            $user = User::find($attributes['created_by']);
+
+            if (!$user->threadLikes()->where('thread_id', $thread->id)->exists()) {
+
+                $user->threadLikes()->create([
+                    'thread_id' => $thread->id
+                ]);
+            }
+
+            $date = $thread->created_at->addMinutes(rand(0, 1440));
+
+            return [
+                'body'       => $this->faker->sentence(),
+                'created_at' => $date,
+                'updated_at' => $date,
+                'child_id'   => $thread?->id
+            ];
+        });
+    }
+
+    public function retweet()
+    {
+        return $this->state(function (array $attributes) {
+
+            $thread = Thread::whereNull('parent_id')->inRandomOrder()->first();
+
+            $date = $thread->created_at->addMinutes(rand(0, 1440));
+
+            return [
+                'body'       => null,
+                'created_at' => $date,
+                'updated_at' => $date,
+                'child_id'   => $thread?->id
+            ];
+        });
+    }
+
     /**
      * Create level 2 threads
      *
@@ -38,7 +81,7 @@ class ThreadFactory extends Factory
      *
      * @return static
      */
-    public function levelTwo()
+    public function reply()
     {
         return $this->state(function (array $attributes) {
 
@@ -47,31 +90,6 @@ class ThreadFactory extends Factory
             $replyGap = $thread->created_at->diffInMinutes(Carbon::now());
 
             $date = $thread->created_at->addMinutes(rand(0, $replyGap));
-
-            return [
-                'parent_id' => $thread->id,
-                'created_at' => $date,
-                'updated_at' => $date,
-            ];
-        });
-    }
-
-    /**
-     * Create level 3 threads
-     *
-     * i.e. threads->threads->threads
-     *
-     * @return static
-     */
-    public function levelThree()
-    {
-        return $this->state(function (array $attributes) {
-
-            $thread = Thread::whereNotNull('parent_id')->inRandomOrder()->first();
-
-            $replyGap = $thread->created_at->diffInMinutes(Carbon::now());
-
-            $date = $thread->created_at->clone()->addMinutes(rand(ceil($replyGap/2), $replyGap));
 
             return [
                 'parent_id' => $thread->id,

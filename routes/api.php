@@ -21,6 +21,8 @@ require('api/user-follower.php');
 
 require('api/user-following.php');
 
+require('api/user.php');
+
 require('api/thread.php');
 
 require('api/thread-reply.php');

@@ -46,6 +46,11 @@ class Thread extends Model
         return $this->hasMany(self::class);
     }
 
+    public function shared()
+    {
+        return $this->hasOne(self::class,'id', 'child_id');
+    }
+
      /**
       * replies thread
       *
@@ -82,7 +87,8 @@ class Thread extends Model
                         $on->whereColumn('thread_likes.thread_id', 'threads.id')
                             ->where('thread_likes.user_id', $user->id);
                     })
-                    ->where('follower_id', $user->id);
+                    ->where('threads.created_by', $user->id)
+                    ->orWhere('follower_id', $user->id);
     }
 
     public function likes()

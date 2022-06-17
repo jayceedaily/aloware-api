@@ -26,7 +26,7 @@ class UserFollowerSeeder extends Seeder
 
             $followings = User::inRandomOrder()
                                 ->where('id', '!=', $follower->id)
-                                ->limit(\rand(1,100))
+                                ->limit(\rand(1,floor(User::count() / 2)))
                                 ->get();
 
             foreach ($followings as $following) {

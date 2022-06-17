@@ -16,6 +16,9 @@ class ThreadController extends Controller
     {
         $threads = Thread::fromFollowing($request->user())
                             ->with('createdBy')
+                            ->with('shared.createdBy')
+                            ->with('shared.shared.createdBy')
+                            ->with('parent.createdBy')
                             ->withCount(['replies','likes'])
                             ->latest()
                             ->paginate();

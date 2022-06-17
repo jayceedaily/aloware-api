@@ -18,19 +18,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        echo 'SEEDING USERS' . PHP_EOL;
-        User::factory(1000)->create();
+        // echo 'SEEDING USERS' . PHP_EOL;
+        // User::factory(10)->create();
 
-        echo 'SEEDING FOLLOWERS' . PHP_EOL;
-        $this->call(UserFollowerSeeder::class);
+        // echo 'SEEDING FOLLOWERS' . PHP_EOL;
+        // $this->call(UserFollowerSeeder::class);
 
-        echo 'SEEDING LEVEL 1 COMMENTS' . PHP_EOL;
+        echo 'SEEDING TWEETS' . PHP_EOL;
         Thread::factory(100)->create();
 
-        echo 'SEEDING LEVEL 2 COMMENTS' . PHP_EOL;
-        Thread::factory(1000)->levelTwo()->create();
+        echo 'SEEDING RETWEET' . PHP_EOL;
+        Thread::factory(100)->retweet()->create();
 
-        echo 'SEEDING LEVEL 3 COMMENTS' . PHP_EOL;
-        Thread::factory(10000)->levelThree()->create();
+        echo 'SEEDING REPLY' . PHP_EOL;
+        Thread::factory(100)->reply()->create();
+
+        echo 'SEEDING SHARE' . PHP_EOL;
+        Thread::factory(100)->share()->create();
     }
 }
