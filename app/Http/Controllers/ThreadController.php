@@ -15,13 +15,17 @@ class ThreadController extends Controller
     public function index(Request $request)
     {
         $threads = Thread::fromFollowing($request->user())
-                            ->with('createdBy')
-                            ->with('shared.createdBy')
-                            ->with('shared.shared.createdBy')
-                            ->with('parent.createdBy')
-                            ->withCount(['replies','likes'])
-                            ->latest()
-                            ->paginate();
+            ->with('createdBy')
+            ->with(['parent' => function ($query) {
+                $query->withCount(['likes', 'replies', 'children']);
+                $query->with(['shared.createdBy', 'createdBy']);
+            }, 'shared' => function ($query) {
+                $query->with(['createdBy', 'shared']);
+                $query->withCount(['likes', 'replies', 'children']);
+            }])
+            ->withCount(['replies', 'likes', 'children'])
+            ->latest()
+            ->paginate();
 
         return response($threads);
     }
@@ -46,7 +50,7 @@ class ThreadController extends Controller
     {
         $thread->load('createdBy');
 
-        $thread->loadCount(['replies','likes']);
+        $thread->loadCount(['replies', 'likes']);
 
         return response($thread);
     }
@@ -55,11 +59,11 @@ class ThreadController extends Controller
 
 
 /**
-     * Get Eloquent query with bindings
-     */
-    function get_eloquent_sql_with_bindings($query)
-    {
-        return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
-            return is_numeric($binding) ? $binding : "'{$binding}'";
-        })->toArray());
-    }
+ * Get Eloquent query with bindings
+ */
+function get_eloquent_sql_with_bindings($query)
+{
+    return vsprintf(str_replace('?', '%s', $query->toSql()), collect($query->getBindings())->map(function ($binding) {
+        return is_numeric($binding) ? $binding : "'{$binding}'";
+    })->toArray());
+}

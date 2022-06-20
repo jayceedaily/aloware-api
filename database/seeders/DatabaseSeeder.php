@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(UserFollowerSeeder::class);
 
         echo 'SEEDING TWEETS' . PHP_EOL;
-        Thread::factory(100)->create();
+        Thread::factory(1000)->create();
 
         echo 'SEEDING RETWEET' . PHP_EOL;
         Thread::factory(100)->retweet()->create();

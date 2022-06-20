@@ -19,7 +19,7 @@ class ThreadFactory extends Factory
      */
     public function definition()
     {
-        $date = Carbon::today()->subMinutes(rand(0, 1440));
+        $date = Carbon::today()->subMinutes(rand(0, 1440*30));
 
         $user = User::inRandomOrder()->first();
 
@@ -85,11 +85,9 @@ class ThreadFactory extends Factory
     {
         return $this->state(function (array $attributes) {
 
-            $thread = Thread::whereNull('parent_id')->inRandomOrder()->first();
+            $thread = Thread::whereNull('parent_id')->whereNotNull('body')->inRandomOrder()->first();
 
-            $replyGap = $thread->created_at->diffInMinutes(Carbon::now());
-
-            $date = $thread->created_at->addMinutes(rand(0, $replyGap));
+            $date = $thread->created_at->addMinutes(rand(0, 1440));
 
             return [
                 'parent_id' => $thread->id,

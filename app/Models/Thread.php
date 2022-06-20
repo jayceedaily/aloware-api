@@ -36,6 +36,11 @@ class Thread extends Model
         return $this->hasOne(self::class, 'id', 'parent_id');
     }
 
+    public function children()
+    {
+        return $this->hasMany(self::class, 'child_id');
+    }
+
     /**
      * Child thread
      *
